@@ -1,0 +1,2 @@
+# lore
+Character Profile project
