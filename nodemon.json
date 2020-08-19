@@ -1,0 +1,7 @@
+{
+    "env": {
+        "MONGO_USER": "zaki",
+        "MONGO_PASSWORD": "AuMIs5swC1lehZCo",
+        "MONGO_DB": "lore-dev"
+    }
+}

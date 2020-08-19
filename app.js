@@ -2,12 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
+const mongoose = require('mongoose');
+
+const CharProfile = require('./models/charProfile');
 
 const app = express();
 
-const charProfiles = []; 
-
-app.use(bodyParser.json());
+app.use(bodyParser.json()); 
 
 app.use(
     '/graphql', 
@@ -20,6 +21,7 @@ app.use(
                 eyeColour: String!
                 hairColour: String!
                 history: String!
+                dateCreated: String! 
             }
 
             input CharInput {
@@ -28,6 +30,7 @@ app.use(
                 eyeColour: String!
                 hairColour: String!
                 history: String!
+                dateCreated: String!
             }
 
             type RootQuery {
@@ -44,24 +47,47 @@ app.use(
             }
         `),
         rootValue: {
-            charProfiles: () => {
-                return charProfiles
+            charProfiles: () => {   
+                return CharProfile.find()
+                .then(profiles => {
+                    return profiles.map(profile => {
+                        return { ...profile._doc, _id: profile.id };
+                    })
+                }).catch(err => {
+                    throw err;
+                });
             },
             createCharProfile: (args) => {
-                const charProfile = {
-                    _id: Math.random().toString(),
+                const charProfile = new CharProfile({
                     name: args.charInput.name,
                     age: args.charInput.age,
                     eyeColour: args.charInput.eyeColour,
-                    hairColour: args.hairColour.hairColour,
-                    history: args.charInput.history
-                }
-                charProfiles.push(charProfile);
-                return charProfile;
+                    hairColour: args.charInput.hairColour,
+                    history: args.charInput.history,
+                    dateCreated: new Date(args.charInput.dateCreated)
+                });
+                return charProfile
+                .save()
+                .then(result => {
+                    console.log(result);
+                    return {...result._doc, _id: result.id};
+                })
+                .catch(err => {
+                    console.log(err);
+                    throw err;
+                });
             }
         },
         graphiql: true
     })
 );
 
-app.listen(3000);
+const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@lorecluster0.d0xng.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`
+
+mongoose.connect(uri, { useNewUrlParser: true })
+    .then(() => {
+        app.listen(3000);
+    })
+    .catch(err => {
+        console.log(err);
+    });
