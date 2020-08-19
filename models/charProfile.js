@@ -26,7 +26,11 @@ const charProfileSchema = new Schema({
     dateCreated: {
         type: Date,
         default: Date.now
+    },
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 
-module.exports = mongoose.model('charProfile', charProfileSchema);
+module.exports = mongoose.model('CharProfile', charProfileSchema);

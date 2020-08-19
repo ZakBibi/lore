@@ -3,8 +3,10 @@ const bodyParser = require('body-parser');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs')
 
 const CharProfile = require('./models/charProfile');
+const User = require('./models/user');
 
 const app = express();
 
@@ -24,6 +26,13 @@ app.use(
                 dateCreated: String! 
             }
 
+            type User {
+                _id: ID!
+                email: String!
+                password: String
+                userName: String!
+            }
+
             input CharInput {
                 name: String!
                 age: String!
@@ -33,12 +42,19 @@ app.use(
                 dateCreated: String!
             }
 
+            input UserInput {
+                email: String!
+                password: String!
+                userName: String!
+            }
+
             type RootQuery {
                 charProfiles: [CharProfile!]!
             }
 
             type RootMutation {
                 createCharProfile(charInput: CharInput): CharProfile
+                createUser(userInput: UserInput): User
             }
 
             schema {
@@ -64,16 +80,50 @@ app.use(
                     eyeColour: args.charInput.eyeColour,
                     hairColour: args.charInput.hairColour,
                     history: args.charInput.history,
-                    dateCreated: new Date(args.charInput.dateCreated)
+                    dateCreated: new Date(args.charInput.dateCreated),
+                    creator: '5f3d50b01f339d311f694222'
                 });
+                let createdProfile;
                 return charProfile
                 .save()
                 .then(result => {
-                    console.log(result);
-                    return {...result._doc, _id: result.id};
+                    createdProfile = {...result._doc, _id: result.id};
+                    return User.findById('5f3d50b01f339d311f694222')
+                })
+                .then(user => {
+                    if (!user) {
+                        throw new Error('User not found.');
+                    }
+                    user.createdEvents.push(charProfile);
+                    return user.save();
+                })
+                .then(result => {
+                    return createdProfile;
                 })
                 .catch(err => {
                     console.log(err);
+                    throw err;
+                });
+            },
+            createUser: args => {
+                return User.findOne({email: args.userInput.email}).then(user => {
+                    if (user) {
+                        throw new Error('User exists already.');
+                    }
+                    return bcrypt.hash(args.userInput.password, 12);
+                })
+                .then(hashedPassword => {
+                    const user = new User({
+                        email: args.userInput.email,
+                        password:hashedPassword,
+                        userName: args.userInput.userName
+                    });
+                    return user.save();
+                })
+                .then(user => {
+                    return { ... user._doc, password: null, _id: user.id}
+                })
+                .catch(err => {
                     throw err;
                 });
             }
