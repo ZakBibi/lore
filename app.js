@@ -5,18 +5,37 @@ const { buildSchema } = require('graphql');
 
 const app = express();
 
+const charProfiles = []; 
+
 app.use(bodyParser.json());
 
 app.use(
     '/graphql', 
     graphqlHTTP({
         schema: buildSchema(`
+            type CharProfile {
+                _id: ID!
+                name: String!
+                age: String!
+                eyeColour: String!
+                hairColour: String!
+                history: String!
+            }
+
+            input CharInput {
+                name: String!
+                age: String!
+                eyeColour: String!
+                hairColour: String!
+                history: String!
+            }
+
             type RootQuery {
-                charProfiles: [String!]!
+                charProfiles: [CharProfile!]!
             }
 
             type RootMutation {
-                createCharProfile(name: String): String
+                createCharProfile(charInput: CharInput): CharProfile
             }
 
             schema {
@@ -26,11 +45,19 @@ app.use(
         `),
         rootValue: {
             charProfiles: () => {
-                return ['Dex', 'Beni', 'Ohru']
+                return charProfiles
             },
             createCharProfile: (args) => {
-                const charProfileName = args.name;
-                return charProfileName
+                const charProfile = {
+                    _id: Math.random().toString(),
+                    name: args.charInput.name,
+                    age: args.charInput.age,
+                    eyeColour: args.charInput.eyeColour,
+                    hairColour: args.hairColour.hairColour,
+                    history: args.charInput.history
+                }
+                charProfiles.push(charProfile);
+                return charProfile;
             }
         },
         graphiql: true
