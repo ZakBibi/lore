@@ -23,6 +23,10 @@ const charProfileSchema = new Schema({
         type: String,
         required: true
     },
+    origin: {
+        type: String,
+        required: true
+    },
     dateCreated: {
         type: Date,
         required: true

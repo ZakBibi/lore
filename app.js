@@ -23,6 +23,7 @@ app.use(
                 eyeColour: String!
                 hairColour: String!
                 history: String!
+                origin: String!
                 dateCreated: String! 
             }
 
@@ -39,6 +40,7 @@ app.use(
                 eyeColour: String!
                 hairColour: String!
                 history: String!
+                origin: String!
                 dateCreated: String!
             }
 
@@ -80,6 +82,7 @@ app.use(
                     eyeColour: args.charInput.eyeColour,
                     hairColour: args.charInput.hairColour,
                     history: args.charInput.history,
+                    origin: args.charInput.origin,
                     dateCreated: new Date(args.charInput.dateCreated),
                     creator: '5f3d50b01f339d311f694222'
                 });
