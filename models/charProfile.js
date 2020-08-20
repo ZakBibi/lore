@@ -27,10 +27,6 @@ const charProfileSchema = new Schema({
         type: String,
         required: true
     },
-    dateCreated: {
-        type: Date,
-        required: true
-    },
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User'
