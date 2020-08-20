@@ -25,7 +25,7 @@ const charProfileSchema = new Schema({
     },
     dateCreated: {
         type: Date,
-        default: Date.now
+        required: true
     },
     creator: {
         type: Schema.Types.ObjectId,

@@ -94,7 +94,7 @@ app.use(
                     if (!user) {
                         throw new Error('User not found.');
                     }
-                    user.createdEvents.push(charProfile);
+                    user.createdProfiles.push(charProfile);
                     return user.save();
                 })
                 .then(result => {
