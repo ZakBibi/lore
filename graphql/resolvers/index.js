@@ -59,12 +59,12 @@ module.exports = {
                 const result = await charProfile
                     .save();
                 createdProfile = { ...result._doc, _id: result.id };
-                const user = await User.findById('5f3d50b01f339d311f694222');
-                if (!user) {
+                const creator = await User.findById('5f3d50b01f339d311f694222');
+                if (!creator) {
                     throw new Error('User not found.');
                 }
-                user.createdProfiles.push(charProfile);
-                const result_1 = await user.save();
+                creator.createdProfiles.push(charProfile);
+                await creator.save();
                 return createdProfile;
             }
             catch (err) {
