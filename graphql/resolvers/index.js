@@ -47,6 +47,7 @@ module.exports = {
             const charProfile = new CharProfile({
                 name: args.charInput.name,
                 age: args.charInput.age,
+                gender: args.charInput.gender,
                 eyeColour: args.charInput.eyeColour,
                 hairColour: args.charInput.hairColour,
                 history: args.charInput.history,

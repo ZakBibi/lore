@@ -5,6 +5,7 @@ module.exports = buildSchema(`
             _id: ID!
             name: String!
             age: String!
+            gender: String!
             eyeColour: String!
             hairColour: String!
             history: String!
@@ -23,6 +24,7 @@ module.exports = buildSchema(`
         input CharInput {
             name: String!
             age: String!
+            gender: String!
             eyeColour: String!
             hairColour: String!
             history: String!
