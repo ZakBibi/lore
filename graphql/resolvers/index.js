@@ -3,20 +3,33 @@ const bcrypt = require('bcryptjs')
 const CharProfile = require('../../models/charProfile');
 const User = require('../../models/user');
 
+const transformProfile = profile => {
+    return {
+        ...profile._doc,
+        _id: profile.id,
+        creator: user.bind(this, profile.creator)
+    };
+};
+
 const profiles = async profileIds => {
     try {
         const profiles = await CharProfile.find({ _id: { $in: profileIds } });
-        profiles.map(profile => {
-            return {
-                ...profile._doc,
-                _id: profile.id,
-                creator: user.bind(this, profile.creator)
-            };
+        return profiles.map(profile => {
+            return transformProfile(profile)
         });
     } catch (err) {
         throw err;
     }
-}
+};
+
+const singleProfile = async profileId => {
+    try {
+        const profile = await profile.findById(profileId);
+        return transformProfile(profile);
+    } catch (err) {
+        throw err; 
+    }
+};
 
 const user = async userId => {
     try {
@@ -36,10 +49,9 @@ module.exports = {
             try {
             const profiles = await CharProfile.find();
             return profiles.map(profile => {
-                return { ...profile._doc, _id: profile.id };
+                return transformProfile(profile);
             });
-        }
-        catch (err) {
+        } catch (err) {
             throw err;
         }
         },
@@ -52,25 +64,34 @@ module.exports = {
                 hairColour: args.charInput.hairColour,
                 history: args.charInput.history,
                 origin: args.charInput.origin,
-                dateCreated: new Date(args.charInput.dateCreated),
                 creator: '5f3d50b01f339d311f694222'
             });
             let createdProfile;
             try {
-                const result = await charProfile
-                    .save();
-                createdProfile = { ...result._doc, _id: result.id };
+                const result = await charProfile.save();
+                createdProfile = transformProfile(result);
                 const creator = await User.findById('5f3d50b01f339d311f694222');
+
                 if (!creator) {
                     throw new Error('User not found.');
                 }
                 creator.createdProfiles.push(charProfile);
                 await creator.save();
+
                 return createdProfile;
-            }
-            catch (err) {
+            } catch (err) {
                 console.log(err);
                 throw err;
+            }
+        },
+        deleteCharProfile: async args => {
+            try {
+                const profile = await Profile.findById(args.profileId).populate('profile');
+                const charProfile = transformProfile(profile)
+                await Profile.deleteOne({_id: args.profileId})
+                return charProfile
+            } catch (err) {
+            throw err
             }
         },
         createUser: async args => {
@@ -91,5 +112,5 @@ module.exports = {
             catch (err) {
                 throw err;
             }
-    }
-}
+        }
+};

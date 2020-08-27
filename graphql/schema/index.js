@@ -44,6 +44,7 @@ module.exports = buildSchema(`
         type RootMutation {
             createCharProfile(charInput: CharInput): CharProfile
             createUser(userInput: UserInput): User
+            deleteCharProfile(profileId: ID!): CharProfile!
         }
 
         schema {
