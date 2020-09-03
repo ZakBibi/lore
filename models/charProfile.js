@@ -12,11 +12,11 @@ const charProfileSchema = new Schema({
         required: true
     },
     eyeColour: {
-        type: String, 
+        type: String,
         required: true
     },
     hairColour: {
-        type: String, 
+        type: String,
         required: true
     },
     history: {

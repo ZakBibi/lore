@@ -52,4 +52,3 @@ module.exports = buildSchema(`
             mutation: RootMutation
         }
     `)
-    
