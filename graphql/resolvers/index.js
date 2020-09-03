@@ -22,15 +22,6 @@ const profiles = async profileIds => {
     }
 };
 
-const singleProfile = async profileId => {
-    try {
-        const profile = await profile.findById(profileId);
-        return transformProfile(profile);
-    } catch (err) {
-        throw err; 
-    }
-};
-
 const user = async userId => {
     try {
         const user = await User.findById(userId);
@@ -88,10 +79,11 @@ module.exports = {
             try {
                 const profile = await Profile.findById(args.profileId).populate('profile');
                 const charProfile = transformProfile(profile)
-                await Profile.deleteOne({_id: args.profileId})
-                return charProfile
+                await Profile.deleteOne({ _id: args.profileId });
+
+                return charProfile;
             } catch (err) {
-            throw err
+                throw err;  
             }
         },
         createUser: async args => {
@@ -100,6 +92,10 @@ module.exports = {
                 if (user) {
                     throw new Error('User exists already.');
                 }
+                const userName = await User.findOne( { userName: args.userInput.userName });
+                    if (userName) {
+                        throw new Error('User name exists already.')
+                    }
                 const hashedPassword = await bcrypt.hash(args.userInput.password, 12);
                 const user_1 = new User({
                     email: args.userInput.email,
