@@ -21,6 +21,12 @@ module.exports = buildSchema(`
             createdProfiles: [CharProfile!]
         }
 
+        type AuthData {
+            userId: ID!
+            token: String!
+            tokenExpiration: Int!
+        }
+
         input CharInput {
             name: String!
             age: String!
@@ -39,6 +45,7 @@ module.exports = buildSchema(`
 
         type RootQuery {
             charProfiles: [CharProfile!]!
+            login(email: String!, password: String!, userName: String!): AuthData!
         }
 
         type RootMutation {
