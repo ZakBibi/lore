@@ -13,7 +13,10 @@ module.exports = {
             throw err;
         }
     },
-    createCharProfile: async (args) => {
+    createCharProfile: async (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated!')
+        }
         const charProfile = new CharProfile({
             name: args.charInput.name,
             age: args.charInput.age,
@@ -22,13 +25,13 @@ module.exports = {
             hairColour: args.charInput.hairColour,
             history: args.charInput.history,
             origin: args.charInput.origin,
-            creator: '5f3d50b01f339d311f694222'
+            creator: req.userId
         });
         let createdProfile;
         try {
             const result = await charProfile.save();
             createdProfile = transformProfile(result);
-            const creator = await User.findById('5f3d50b01f339d311f694222');
+            const creator = await User.findById(req.userId);
 
             if (!creator) {
                 throw new Error('User not found.');
@@ -42,7 +45,10 @@ module.exports = {
             throw err;
         }
     },
-    deleteCharProfile: async args => {
+    deleteCharProfile: async (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated!')
+        }
         try {
             const profile = await Profile.findById(args.profileId).populate('profile');
             const charProfile = transformProfile(profile)
